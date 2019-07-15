@@ -55,49 +55,40 @@
                 </executions>
             </plugin>
 
-            <plugin>
-                <artifactId>maven-resources-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>copy-resources</id>
-                        <phase>validate</phase>
-                        <goals>
-                            <goal>copy-resources</goal>
-                        </goals>
-                        <configuration>
-                            <outputDirectory>${basedir}/target</outputDirectory>
-                            <resources>
-                                <resource>
-                                    <directory>src/main/docker</directory>
-                                    <filtering>true</filtering>
-                                </resource>
-                            </resources>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
 
             <plugin>
-                <groupId>com.spotify</groupId>
-                <artifactId>dockerfile-maven-plugin</artifactId>
-                <version>1.4.10</version>
+                <groupId>io.fabric8</groupId>
+                <artifactId>docker-maven-plugin</artifactId>
+                <configuration>
+                    <images>
+                        <image>
+                            <name>eloi-fabric8/gs-spring-boot:${project.version}</name>
+                            <alias>eloi-fabric8</alias>
+                            <build>
+                                <from>openjdk:8-jdk-alpine</from>
+                                <assembly>
+                                    <descriptorRef>artifact</descriptorRef>
+                                </assembly>
+                                <cmd>java -jar maven/${project.name}-${project.version}.jar</cmd>
+                            </build>
+                            <run>
+                                <ports>8080:8080</ports>
+                                <wait>
+                                    <log>Started Application</log>
+                                </wait>
+                            </run>
+                        </image>
+                    </images>
+                </configuration>
                 <executions>
                     <execution>
-                        <id>default</id>
+                        <id>docker:start</id>
+                        <phase>install</phase>
                         <goals>
-                            <goal>build</goal>
-                            <!--<goal>push</goal>-->
+                            <goal>run</goal>
                         </goals>
                     </execution>
                 </executions>
-                <configuration>
-                    <!--<contextDirectory>src/main/resources/docker</contextDirectory>-->
-                    <repository>eloi-spotify/gs-spring-boot</repository>
-                    <tag>${project.version}</tag>
-                    <buildArgs>
-                        <JAR_FILE>target/${project.build.finalName}.jar</JAR_FILE>
-                    </buildArgs>
-                </configuration>
             </plugin>
         </plugins>
     </build>
