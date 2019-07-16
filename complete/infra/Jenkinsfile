@@ -2,6 +2,8 @@
 
 import groovy.transform.Field
 
+@Field def gitUrl = "https://github.com/eloimendes/gs-spring-boot.git"
+@Field def gitBranch = "docker-multi-stage"
 @Field def imageName = "eloi-docker-multi/gs-spring-boot"
 @Field def registryUrl = "localhost:5000"
 @Field def releaseNumber
@@ -10,7 +12,7 @@ node {
    def mvnHome
    stage('Preparation') { // for display purposes
       // Get some code from a GitHub repository
-      git branch: 'docker-multi-stage', url: 'https://github.com/eloimendes/gs-spring-boot.git'
+      git branch: ${gitBranch}, url: ${gitUrl}
    }
    stage('Build jar') {
       // Run the maven build
