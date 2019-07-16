@@ -6,36 +6,29 @@ import groovy.transform.Field
 @Field def gitBranch = "docker-multi-stage"
 @Field def imageName = "eloi-docker-multi/gs-spring-boot"
 @Field def registryUrl = "localhost:5000"
-@Field def releaseNumber
 @Field def mavenImage = "maven:3.5.2-jdk-8-alpine"
 @Field def mavenCommands = "mvn clean package -DskipTests"
+@Field def releaseNumber
 @Field def currentDir
 
 node {
-   def mvnHome
    stage('Preparation') { // for display purposes
-      // Get some code from a GitHub repository
       git branch: "${gitBranch}", url: "${gitUrl}"
    }
    stage('Build jar') {
-      // Run the maven build
       dir("complete") {
         currentDir = pwd()
         sh "docker run -v ~/.m2:/root/.m2 -v ${currentDir}:/usr/src -w /usr/src ${mavenImage} ${mavenCommands}"
         sh "docker run -v ~/.m2:/root/.m2 -v ${currentDir}:/usr/src -w /usr/src ${mavenImage} mvn help:evaluate -Dexpression=project.version | grep -o \"^[0-9]*\\.[0-9]*\\.[0-9]*\" > target/release"
-//        sh 'chmod +x mvn-docker.sh'
-//        sh './mvn-docker.sh'
         releaseNumber=readFile('target/release').trim()
       }
    }
    stage('Build image') {
-      // Build docker image
       dir("complete") {
         sh "docker build -t ${imageName}:${releaseNumber} ."
       }
    }
    stage('Push image') {
-       // Push docker image
        dir("complete") {
            sh "docker tag ${imageName}:${releaseNumber} ${registryUrl}/${imageName}:${releaseNumber}"
            sh "docker push ${registryUrl}/${imageName}"
