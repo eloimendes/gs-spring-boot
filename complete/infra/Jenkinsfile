@@ -2,6 +2,8 @@
 
 import groovy.transform.Field
 
+@Field def imageName = "eloi-docker-multi/gs-spring-boot"
+@Field def registryUrl = "localhost:5000"
 @Field def releaseNumber
 
 node {
@@ -21,7 +23,14 @@ node {
    stage('Build image') {
       // Build docker image
       dir("complete") {
-        sh "docker build -t eloi-docker-multi/gs-spring-boot:${releaseNumber} ."
+        sh "docker build -t ${imageName}:${releaseNumber} ."
       }
    }
+    stage('Push image') {
+        // Push docker image
+        dir("complete") {
+            sh "docker tag ${imageName}:${releaseNumber} ${registryUrl}/${imageName}"
+            sh "docker push ${registryUrl}/${imageName}"
+        }
+    }
 }
