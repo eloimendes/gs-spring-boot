@@ -26,11 +26,11 @@ node {
         sh "docker build -t ${imageName}:${releaseNumber} ."
       }
    }
-    stage('Push image') {
-        // Push docker image
-        dir("complete") {
-            sh "docker tag ${imageName}:${releaseNumber} ${registryUrl}/${imageName}"
-            sh "docker push ${registryUrl}/${imageName}"
-        }
-    }
+   stage('Push image') {
+       // Push docker image
+       dir("complete") {
+           sh "docker tag ${imageName}:${releaseNumber} ${registryUrl}/${imageName}:${releaseNumber}"
+           sh "docker push ${registryUrl}/${imageName}"
+       }
+   }
 }
