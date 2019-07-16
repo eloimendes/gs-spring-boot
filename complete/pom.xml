@@ -5,7 +5,7 @@
 
     <groupId>org.springframework</groupId>
     <artifactId>gs-spring-boot</artifactId>
-    <version>0.1.0</version>
+    <version>0.1.1</version>
 
     <parent>
         <groupId>org.springframework.boot</groupId>
@@ -85,53 +85,53 @@
 
             <build>
                 <plugins>
-                    <plugin>
-                        <artifactId>maven-resources-plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <id>copy-resources</id>
-                                <phase>validate</phase>
-                                <goals>
-                                    <goal>copy-resources</goal>
-                                </goals>
-                                <configuration>
-                                    <outputDirectory>${basedir}/target</outputDirectory>
-                                    <resources>
-                                        <resource>
-                                            <directory>src/main/resources/docker</directory>
-                                            <filtering>true</filtering>
-                                        </resource>
-                                    </resources>
-                                </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
+                    <!--<plugin>-->
+                        <!--<artifactId>maven-resources-plugin</artifactId>-->
+                        <!--<executions>-->
+                            <!--<execution>-->
+                                <!--<id>copy-resources</id>-->
+                                <!--<phase>validate</phase>-->
+                                <!--<goals>-->
+                                    <!--<goal>copy-resources</goal>-->
+                                <!--</goals>-->
+                                <!--<configuration>-->
+                                    <!--<outputDirectory>${basedir}/target</outputDirectory>-->
+                                    <!--<resources>-->
+                                        <!--<resource>-->
+                                            <!--<directory>src/main/resources</directory>-->
+                                            <!--<filtering>true</filtering>-->
+                                        <!--</resource>-->
+                                    <!--</resources>-->
+                                <!--</configuration>-->
+                            <!--</execution>-->
+                        <!--</executions>-->
+                    <!--</plugin>-->
 
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-antrun-plugin</artifactId>
-                        <version>1.6</version>
-                        <executions>
-                            <execution>
-                                <id>prepare-package</id>
-                                <phase>package</phase>
-                                <inherited>false</inherited>
-                                <configuration>
-                                    <target>
-                                        <exec executable="docker">
-                                            <arg value="build"/>
-                                            <arg value="-t"/>
-                                            <arg value="${project.artifactId}:${project.version}"/>
-                                            <arg value="target"/>
-                                        </exec>
-                                    </target>
-                                </configuration>
-                                <goals>
-                                    <goal>run</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
+                    <!--<plugin>-->
+                        <!--<groupId>org.apache.maven.plugins</groupId>-->
+                        <!--<artifactId>maven-antrun-plugin</artifactId>-->
+                        <!--<version>1.6</version>-->
+                        <!--<executions>-->
+                            <!--<execution>-->
+                                <!--<id>prepare-package</id>-->
+                                <!--<phase>package</phase>-->
+                                <!--<inherited>false</inherited>-->
+                                <!--<configuration>-->
+                                    <!--<target>-->
+                                        <!--<exec executable="docker">-->
+                                            <!--<arg value="build"/>-->
+                                            <!--<arg value="-t"/>-->
+                                            <!--<arg value="${project.artifactId}:${project.version}"/>-->
+                                            <!--<arg value="target"/>-->
+                                        <!--</exec>-->
+                                    <!--</target>-->
+                                <!--</configuration>-->
+                                <!--<goals>-->
+                                    <!--<goal>run</goal>-->
+                                <!--</goals>-->
+                            <!--</execution>-->
+                        <!--</executions>-->
+                    <!--</plugin>-->
                 </plugins>
             </build>
             <activation>
@@ -155,13 +155,13 @@
                                     <target>
                                         <exec executable="docker">
                                             <arg value="tag"/>
-                                            <arg value="${project.artifactId}:${project.version}"/>
+                                            <arg value="eloi-docker-multi/${project.artifactId}:${project.version}"/>
                                             <arg value="${project.artifactId}:latest"/>
                                         </exec>
-                                        <exec executable="docker">
-                                            <arg value="push"/>
-                                            <arg value="${project.artifactId}:latest"/>
-                                        </exec>
+                                        <!--<exec executable="docker">-->
+                                            <!--<arg value="push"/>-->
+                                            <!--<arg value="${project.artifactId}:latest"/>-->
+                                        <!--</exec>-->
                                     </target>
                                 </configuration>
                                 <goals>
