@@ -1,0 +1,15 @@
+node {
+   def mvnHome
+   stage('Preparation') { // for display purposes
+      // Get some code from a GitHub repository
+      git branch: 'docker-multi-stage', url: 'https://github.com/eloimendes/gs-spring-boot.git'
+   }
+   stage('Build') {
+      // Run the maven build
+      dir("complete") {
+        sh 'chmod +x mvn-docker.sh'
+        sh './mvn-docker.sh'
+      }
+   }
+
+}
