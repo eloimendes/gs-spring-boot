@@ -7,6 +7,8 @@ import groovy.transform.Field
 @Field def imageName = "eloi-docker-multi/gs-spring-boot"
 @Field def registryUrl = "localhost:5000"
 @Field def releaseNumber
+@Field def mavenImage = "maven:3.5.2-jdk-8-alpine"
+@Field def mavenCommands = "mvn clean package -DskipTests"
 
 node {
    def mvnHome
@@ -17,8 +19,10 @@ node {
    stage('Build jar') {
       // Run the maven build
       dir("complete") {
-        sh 'chmod +x mvn-docker.sh'
-        sh './mvn-docker.sh'
+        sh "docker run -v ~/.m2:/root/.m2 -v \"$PWD\":/usr/src -w /usr/src ${mavenImage} ${mavenCommands}"
+        sh "docker run -v ~/.m2:/root/.m2 -v \"$PWD\":/usr/src -w /usr/src ${mavenImage} mvn help:evaluate -Dexpression=project.version | grep -o \"^[0-9]*\\.[0-9]*\\.[0-9]*\" > target/release"
+//        sh 'chmod +x mvn-docker.sh'
+//        sh './mvn-docker.sh'
         releaseNumber=readFile('target/release').trim()
       }
    }
