@@ -21,7 +21,7 @@ node {
    stage('Build image') {
       // Build docker image
       dir("complete") {
-        sh 'docker build -t eloi-docker-multi/gs-spring-boot:${releaseNumber} .'
+        sh "docker build -t eloi-docker-multi/gs-spring-boot:${releaseNumber} ."
       }
    }
 }
