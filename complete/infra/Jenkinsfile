@@ -8,7 +8,7 @@ import groovy.transform.Field
 @Field def appImageName = "eloi-docker-multi/gs-spring-boot"
 @Field def appReleaseNumber
 
-@Field def mavenImage = "maven:3.5.2-jdk-11-alpine"
+@Field def mavenImage = "maven:3.6.1-jdk-11-slim"
 @Field def mavenGoal = "mvn clean package -DskipTests"
 
 @Field def dockerRegistryUrl = "localhost:5000"
