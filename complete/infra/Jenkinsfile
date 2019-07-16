@@ -4,34 +4,53 @@ import groovy.transform.Field
 
 @Field def gitUrl = "https://github.com/eloimendes/gs-spring-boot.git"
 @Field def gitBranch = "docker-multi-stage"
-@Field def imageName = "eloi-docker-multi/gs-spring-boot"
-@Field def registryUrl = "localhost:5000"
+
+@Field def appImageName = "eloi-docker-multi/gs-spring-boot"
+@Field def appReleaseNumber
+
 @Field def mavenImage = "maven:3.5.2-jdk-8-alpine"
-@Field def mavenCommands = "mvn clean package -DskipTests"
-@Field def releaseNumber
+@Field def mavenGoal = "mvn clean package -DskipTests"
+
+@Field def dockerRegistryUrl = "localhost:5000"
 @Field def currentDir
 
 node {
-   stage('Preparation') { // for display purposes
-      git branch: "${gitBranch}", url: "${gitUrl}"
-   }
-   stage('Build jar') {
-      dir("complete") {
-        currentDir = pwd()
-        sh "docker run -v ~/.m2:/root/.m2 -v ${currentDir}:/usr/src -w /usr/src ${mavenImage} ${mavenCommands}"
-        sh "docker run -v ~/.m2:/root/.m2 -v ${currentDir}:/usr/src -w /usr/src ${mavenImage} mvn help:evaluate -Dexpression=project.version | grep -o \"^[0-9]*\\.[0-9]*\\.[0-9]*\" > target/release"
-        releaseNumber=readFile('target/release').trim()
-      }
-   }
-   stage('Build image') {
-      dir("complete") {
-        sh "docker build -t ${imageName}:${releaseNumber} ."
-      }
-   }
-   stage('Push image') {
-       dir("complete") {
-           sh "docker tag ${imageName}:${releaseNumber} ${registryUrl}/${imageName}:${releaseNumber}"
-           sh "docker push ${registryUrl}/${imageName}"
-       }
-   }
+    gitCheckout()
+    buildRelease()
+    buildImage()
+    pushImage()
+}
+
+def gitCheckout() {
+    stage('Preparation') { // for display purposes
+        git branch: "${gitBranch}", url: "${gitUrl}"
+    }
+}
+
+def buildRelease() {
+    stage('Build jar') {
+        dir("complete") {
+            currentDir = pwd()
+            sh "docker run -v ~/.m2:/root/.m2 -v ${currentDir}:/usr/src -w /usr/src ${mavenImage} ${mavenGoal}"
+            sh "docker run -v ~/.m2:/root/.m2 -v ${currentDir}:/usr/src -w /usr/src ${mavenImage} mvn help:evaluate -Dexpression=project.version | grep -o \"^[0-9]*\\.[0-9]*\\.[0-9]*\" > target/release"
+            appReleaseNumber=readFile('target/release').trim()
+        }
+    }
+}
+
+def buildImage() {
+    stage('Build image') {
+        dir("complete") {
+            sh "docker build -t ${appImageName}:${appReleaseNumber} ."
+        }
+    }
+}
+
+def pushImage() {
+    stage('Push image') {
+        dir("complete") {
+            sh "docker tag ${appImageName}:${appReleaseNumber} ${dockerRegistryUrl}/${appImageName}:${appReleaseNumber}"
+            sh "docker push ${dockerRegistryUrl}/${appImageName}"
+        }
+    }
 }
