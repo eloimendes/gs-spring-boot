@@ -1,4 +1,4 @@
-FROM openjdk:11-jre-alpine
+FROM openjdk:11-slim-stretch
 MAINTAINER "eloimendes@gmail.com"
 COPY target/gs-spring-boot*.jar /opt/app.jar
 EXPOSE 8080
