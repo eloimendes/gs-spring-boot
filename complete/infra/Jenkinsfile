@@ -31,8 +31,8 @@ def buildRelease() {
     stage('Build jar') {
         dir("complete") {
             currentDir = pwd()
-            sh "docker run -v ~/.m2:/root/.m2 -v ${currentDir}:/usr/src -w /usr/src ${mavenImage} ${mavenGoal}"
-            sh "docker run -v ~/.m2:/root/.m2 -v ${currentDir}:/usr/src -w /usr/src ${mavenImage} mvn help:evaluate -Dexpression=project.version | grep -o \"^[0-9]*\\.[0-9]*\\.[0-9]*\" > target/release"
+            sh "docker run --user \$(id -u):\$(id -g) -v ~/.m2:/root/.m2 -v ${currentDir}:/usr/src -w /usr/src ${mavenImage} ${mavenGoal}"
+            sh "docker run --user \$(id -u):\$(id -g) -v ~/.m2:/root/.m2 -v ${currentDir}:/usr/src -w /usr/src ${mavenImage} mvn help:evaluate -Dexpression=project.version | grep -o \"^[0-9]*\\.[0-9]*\\.[0-9]*\" > target/release"
             appReleaseNumber=readFile('target/release').trim()
         }
     }
@@ -41,7 +41,7 @@ def buildRelease() {
 def buildImage() {
     stage('Build image') {
         dir("complete") {
-            sh "docker build -t ${appImageName}:${appReleaseNumber} ."
+            sh "docker build --user \$(id -u):\$(id -g) -t ${appImageName}:${appReleaseNumber} ."
         }
     }
 }
