@@ -42,7 +42,7 @@ def buildRelease() {
 def buildImage() {
     stage('Build image') {
         dir("complete") {
-            sh "docker build --user \$(id -u):\$(id -g) -t ${appImageName}:${appReleaseNumber} ."
+            sh "docker build -t ${appImageName}:${appReleaseNumber} ."
         }
     }
 }
