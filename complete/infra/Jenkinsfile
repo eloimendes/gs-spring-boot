@@ -31,8 +31,9 @@ def buildRelease() {
     stage('Build jar') {
         dir("complete") {
             currentDir = pwd()
-            sh "docker run --user \$(id -u):\$(id -g) -v ~/.m2:/root/.m2 -v ${currentDir}:/usr/src -w /usr/src ${mavenImage} ${mavenGoal}"
-            sh "docker run --user \$(id -u):\$(id -g) -v ~/.m2:/root/.m2 -v ${currentDir}:/usr/src -w /usr/src ${mavenImage} mvn help:evaluate -Dexpression=project.version | grep -o \"^[0-9]*\\.[0-9]*\\.[0-9]*\" > target/release"
+            sh "docker run -v ~/.m2:/var/maven/.m2 -v ${currentDir}:/usr/src -w /usr/src --rm --user \$(id -u):\$(id -g) -e MAVEN_CONFIG=/var/maven/.m2 ${mavenImage} ${mavenGoal} -Duser.home=/var/maven"
+//            sh "docker run --user \$(id -u):\$(id -g) -v ~/.m2:/root/.m2 -v ${currentDir}:/usr/src -w /usr/src ${mavenImage} ${mavenGoal}"
+            sh "docker run -v ~/.m2:/var/maven/.m2 -v ${currentDir}:/usr/src -w /usr/src --rm --user \$(id -u):\$(id -g) -e MAVEN_CONFIG=/var/maven/.m2 ${mavenImage} mvn help:evaluate -Duser.home=/var/maven -Dexpression=project.version | grep -o \"^[0-9]*\\.[0-9]*\\.[0-9]*\" > target/release"
             appReleaseNumber=readFile('target/release').trim()
         }
     }
